@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Механика тесті — 1 нұсқа</title>
+<script>
+window.MathJax={tex:{inlineMath:[['$','$']]},svg:{fontCache:'global'},startup:{typeset:false}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async id="mj"></script>
+<style>
+:root{--ink:#222;--muted:#666;--line:#ddd;--blue:#2563eb;--green:#16a34a;--greenbg:#ecfdf3;--red:#dc2626;--redbg:#fef2f2}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:10px 16px}
+.hwrap{max-width:800px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:1.1rem;margin:0}
+.score{font-weight:600}
+.bar{height:4px;background:#eee;flex-basis:100%}
+.bar>i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.btns button{font:inherit;font-size:.85rem;padding:5px 12px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:6px;cursor:pointer}
+.btns button:hover{border-color:var(--blue);color:var(--blue)}
+main{max-width:800px;margin:0 auto;padding:16px}
+.intro{color:var(--muted);font-size:.92rem;margin:4px 0 16px}
+.q{border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:14px}
+.qt{font-weight:600;margin-bottom:10px}
+.qt b{color:var(--blue);margin-right:4px}
+.opts{display:grid;gap:6px}
+.opt{text-align:left;font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:center}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt:disabled{cursor:default}
+.opt .l{font-weight:700;min-width:1.4em}
+.opt.ok{background:var(--greenbg);border-color:var(--green)}
+.opt.bad{background:var(--redbg);border-color:var(--red)}
+.fb{display:none;margin-top:12px}
+.done>.fb{display:block}
+.verdict{font-weight:700;margin-bottom:6px}
+.verdict.ok{color:var(--green)}.verdict.bad{color:var(--red)}
+.label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:2px}
+.exp{border-left:3px solid var(--blue);padding:4px 12px;margin:8px 0}
+.sim{margin-top:12px;background:#f8f8f8;border-radius:6px;padding:12px}
+.sim .qt{font-weight:500}
+.final{border:2px solid var(--blue);border-radius:8px;padding:18px;text-align:center;display:none}
+.final.show{display:block}
+.final .big{font-size:1.8rem;font-weight:700;color:var(--blue)}
+mjx-container{font-size:105%!important}
+</style>
+</head>
+<body>
+<header><div class="hwrap">
+  <h1>Механика · 1 нұсқа</h1>
+  <span class="score" id="score"></span>
+  <span class="btns"><button id="reveal">Барлық жауапты көрсету</button> <button id="reset">Қайта бастау</button></span>
+  <div class="bar"><i id="prog"></i></div>
+</div></header>
+<main>
+<p class="intro">Бір дұрыс жауапты таңдаңыз. Жауап бергеннен кейін дұрыс жауап, түсініктеме және ұқсас сұрақ шығады.</p>
+<div id="quiz"></div>
+<div class="final" id="final"><div class="big" id="fscore"></div><div id="fmsg"></div></div>
+</main>
+<script>
+const R=String.raw, L="ABCDE";
+const Q=[
+{q:R`Материалдық нүктенің орташа жылдамдық векторы қалай анықталады?`,
+ o:[R`$\langle\vec v\rangle=\dfrac{ds}{dt}$`,R`$\langle\vec v\rangle=\dfrac{\Delta\vec r}{\Delta t}$`,R`$\langle\vec v\rangle=\dfrac{\Delta t}{\Delta\vec r}$`,R`$\langle\vec v\rangle=\dfrac{d\vec v}{dt}$`,R`$\langle\vec v\rangle=\vec r\,t$`],a:1,
+ e:R`Орташа жылдамдық — орын ауыстыру векторының осы орын ауыстыруға кеткен уақытқа қатынасы: $\langle\vec v\rangle=\dfrac{\Delta\vec r}{\Delta t}$. Ал $\dfrac{ds}{dt}$ — лездік жылдамдық модулі, $\dfrac{d\vec v}{dt}$ — үдеу.`,
+ s:{q:R`Материалдық нүктенің лездік жылдамдық векторы қалай анықталады?`,o:[R`$\vec v=\dfrac{\Delta t}{\Delta\vec r}$`,R`$\vec v=\dfrac{d\vec r}{dt}$`,R`$\vec v=\dfrac{d\vec a}{dt}$`,R`$\vec v=\vec r\,t$`],a:1,
+ e:R`Лездік жылдамдық — орташа жылдамдықтың $\Delta t\to0$ кездегі шегі: $\vec v=\lim\limits_{\Delta t\to0}\dfrac{\Delta\vec r}{\Delta t}=\dfrac{d\vec r}{dt}$.`}},
+{q:R`Координата $x=2t^3-3t$ (м) заңымен өзгереді. $t=2$ с кезіндегі үдеу қандай?`,o:["18 м/с²","24 м/с²","21 м/с²","6 м/с²","12 м/с²"],a:1,
+ e:R`$v=\dfrac{dx}{dt}=6t^2-3,\quad a=\dfrac{dv}{dt}=12t.$ $t=2$ с: $a=12\cdot2=24$ м/с².`,
+ s:{q:R`Координата $x=t^3+2t$ (м). $t=3$ с кезіндегі үдеу қандай?`,o:["27 м/с²","18 м/с²","29 м/с²","6 м/с²"],a:1,e:R`$v=3t^2+2,\quad a=6t=6\cdot3=18$ м/с².`}},
+{q:R`Радиусы 2 м шеңбер бойымен 4 м/с тұрақты жылдамдықпен қозғалған нүктенің нормаль үдеуі қандай?`,o:["8 м/с²","4 м/с²","0 м/с²","2 м/с²","16 м/с²"],a:0,
+ e:R`Нормаль (центрге тартқыш) үдеу: $a_n=\dfrac{v^2}{R}=\dfrac{4^2}{2}=8$ м/с².`,
+ s:{q:R`Радиусы 5 м шеңбер бойымен 10 м/с жылдамдықпен қозғалған нүктенің нормаль үдеуі қандай?`,o:["2 м/с²","50 м/с²","20 м/с²","10 м/с²"],a:2,e:R`$a_n=\dfrac{v^2}{R}=\dfrac{100}{5}=20$ м/с².`}},
+{q:R`Жылдамдық модулі тұрақты қисықсызықты қозғалыста үдеу қалай бағытталады?`,o:["Үдеу міндетті түрде нөл","Траекторияға жанама","Жылдамдықпен бағыттас","Жылдамдыққа қарсы","Траекторияның қисықтық центріне қарай"],a:4,
+ e:R`$|\vec v|=\text{const}$ болса, тангенциал үдеу $a_\tau=\dfrac{d|\vec v|}{dt}=0$. Тек жылдамдық бағыты өзгереді, сондықтан тек нормаль үдеу $a_n=\dfrac{v^2}{R}$ қалады — ол қисықтық центріне бағытталған.`,
+ s:{q:R`Шеңбер бойымен бірқалыпты қозғалыста тангенциал үдеу неге тең?`,o:[R`$\dfrac{v^2}{R}$`,"Нөлге",R`$\omega R^2$`,R`$g$-ге`],a:1,e:R`Бірқалыпты қозғалыста $|\vec v|$ өзгермейді, сондықтан $a_\tau=\dfrac{d|\vec v|}{dt}=0$.`}},
+{q:R`Ньютонның екінші заңының импульстік түрі қандай?`,o:[R`$\vec F=\dfrac{d\vec p}{dt}$`,R`$\vec F=\dfrac{m}{\vec v}$`,R`$\vec F=\dfrac{d\vec L}{dt}$`,R`$\vec F=\vec p\,t$`,R`$\vec F=\dfrac{d\vec r}{dt}$`],a:0,
+ e:R`Дене импульсінің уақыт бойынша өзгеру жылдамдығы қорытқы күшке тең: $\vec F=\dfrac{d\vec p}{dt}$. $m=\text{const}$ болса, $\vec F=m\vec a$ шығады. $\dfrac{d\vec L}{dt}$ — күш моменті.`,
+ s:{q:R`Айналмалы қозғалыс динамикасының негізгі теңдеуі (моменттер теңдеуі) қандай?`,o:[R`$\vec M=\dfrac{d\vec p}{dt}$`,R`$\vec M=\dfrac{d\vec L}{dt}$`,R`$\vec M=\vec L\,t$`,R`$\vec M=\dfrac{d\vec\omega}{dt}$`],a:1,e:R`Импульс моментінің уақыт бойынша туындысы сыртқы күштердің қорытқы моментіне тең: $\vec M=\dfrac{d\vec L}{dt}$.`}},
+{q:R`Массасы 5 кг денеге 20 Н қорытқы күш әсер етеді. Үдеу қандай?`,o:["5 м/с²","0,25 м/с²","20 м/с²","4 м/с²","100 м/с²"],a:3,
+ e:R`$a=\dfrac{F}{m}=\dfrac{20}{5}=4$ м/с².`,
+ s:{q:R`Массасы 2 кг дене 3 м/с² үдеумен қозғалады. Қорытқы күш қандай?`,o:["1,5 Н","6 Н","5 Н","0,67 Н"],a:1,e:R`$F=ma=2\cdot3=6$ Н.`}},
+{q:R`Көлденең бетте сырғанап келе жатқан 4 кг дене үшін $\mu=0{,}25$ және $g=10$ м/с². Үйкеліс күші қандай?`,o:["1 Н","40 Н","4 Н","16 Н","10 Н"],a:4,
+ e:R`Көлденең бетте $N=mg=40$ Н. Сырғанау үйкеліс күші: $F=\mu N=0{,}25\cdot40=10$ Н.`,
+ s:{q:R`Көлденең бетте сырғанайтын 10 кг дене үшін $\mu=0{,}3$, $g=10$ м/с². Үйкеліс күші қандай?`,o:["3 Н","30 Н","100 Н","33 Н"],a:1,e:R`$F=\mu mg=0{,}3\cdot10\cdot10=30$ Н.`}},
+{q:R`Ньютонның үшінші заңындағы әрекет және қарсы әрекет күштері қай денелерге түсіріледі?`,o:["Әрқашан бір денеге","Тек тірекке","Өзара әрекеттесетін әртүрлі денелерге","Тек ауыр денеге","Тек тыныштықтағы денелерге"],a:2,
+ e:R`$\vec F_{12}=-\vec F_{21}$: күштер модулі тең, бағыттары қарама-қарсы және әртүрлі денелерге түсіріледі. Сондықтан олар бірін-бірі теңгермейді.`,
+ s:{q:R`Жер алманы 1 Н күшпен тартады. Алма Жерді қандай күшпен тартады?`,o:["0 Н",R`Өте аз, шамамен $10^{-24}$ Н`,"1 Н","Жер массасына тәуелді өте үлкен күш"],a:2,e:R`Үшінші заң бойынша $|\vec F_{12}|=|\vec F_{21}|=1$ Н. Жер массасы өте үлкен, сондықтан оның үдеуі елеусіз.`}},
+{q:R`Сыртқы қорытқы күш нөл болса, материалдық нүктелер жүйесінің қандай шамасы сақталады?`,o:["Әр нүктенің жылдамдығы","Денеаралық қашықтықтары","Потенциалдық энергиясы","Толық импульсі","Әр нүктенің кинетикалық энергиясы"],a:3,
+ e:R`$\dfrac{d\vec P}{dt}=\vec F_{\text{сырт}}$. $\vec F_{\text{сырт}}=0$ болса, $\vec P=\sum m_i\vec v_i=\text{const}$ (тұйық жүйе). Жеке нүктелердің жылдамдықтары ішкі күштерден өзгере береді.`,
+ s:{q:R`Сыртқы күштердің қорытқы моменті нөл болса, жүйенің қандай шамасы сақталады?`,o:["Толық импульсі","Импульс моменті","Кинетикалық энергиясы","Инерция моменті"],a:1,e:R`$\vec M=\dfrac{d\vec L}{dt}$; $\vec M=0$ болса, $\vec L=\text{const}$ — импульс моментінің сақталу заңы.`}},
+{q:R`Массалары 2 кг және 3 кг денелер бір түзуде 5 м/с және 0 м/с жылдамдықпен қозғалып, жабысады. Ортақ жылдамдық қандай?`,o:["2 м/с","5 м/с","2,5 м/с","1 м/с","10 м/с"],a:0,
+ e:R`Импульс сақталады: $m_1v_1+m_2v_2=(m_1+m_2)u \Rightarrow u=\dfrac{2\cdot5+3\cdot0}{5}=2$ м/с.`,
+ s:{q:R`3 кг дене 4 м/с жылдамдықпен тыныштықтағы 1 кг денеге соғылып, жабысады. Ортақ жылдамдық қандай?`,o:["4 м/с","1 м/с","3 м/с","12 м/с"],a:2,e:R`$u=\dfrac{m_1v_1}{m_1+m_2}=\dfrac{3\cdot4}{4}=3$ м/с.`}},
+{q:R`Тыныштықтағы дене ішкі әсерден екі бөлікке бөлінді. Сыртқы күш импульсі еленбейді. Бөліктер импульстері қалай байланысады?`,o:["Байланыс жоқ",R`$\vec p_1=-\vec p_2$`,R`$p_1=2p_2$ міндетті`,R`$\vec p_1=\vec p_2\neq0$`,"Екі импульс те міндетті түрде нөл"],a:1,
+ e:R`Бастапқы импульс нөл және ол сақталады: $\vec p_1+\vec p_2=0\Rightarrow\vec p_1=-\vec p_2$. Бөліктер модульдері тең, қарама-қарсы импульстермен ұшады.`,
+ s:{q:R`Массасы 100 кг тыныштықтағы зеңбірек 1 кг снарядты 200 м/с жылдамдықпен атады. Кері тебу жылдамдығы қандай?`,o:["200 м/с","20 м/с","2 м/с","0,5 м/с"],a:2,e:R`$0=mv-MV\Rightarrow V=\dfrac{mv}{M}=\dfrac{1\cdot200}{100}=2$ м/с.`}},
+{q:R`Массасы 2 кг дененің жылдамдығы 3 м/с-тен 5 м/с-ке артты. Қорытқы күш жұмысы қандай?`,o:["32 Дж","8 Дж","25 Дж","16 Дж","4 Дж"],a:3,
+ e:R`Кинетикалық энергия туралы теорема: $A=\Delta E_k=\dfrac{m(v_2^2-v_1^2)}{2}=\dfrac{2(25-9)}{2}=16$ Дж.`,
+ s:{q:R`Массасы 4 кг дененің жылдамдығы 2 м/с-тен 4 м/с-ке артты. Қорытқы күш жұмысы қандай?`,o:["8 Дж","24 Дж","32 Дж","16 Дж"],a:1,e:R`$A=\dfrac{m(v_2^2-v_1^2)}{2}=\dfrac{4(16-4)}{2}=24$ Дж.`}},
+{q:R`Серпімділік күшінің $x_1$ созылудан $x_2$ созылуға дейінгі жұмысы қандай?`,o:[R`$A=k(x_1-x_2)$`,R`$A=kx_1x_2$`,R`$A=\dfrac{k(x_1^2+x_2^2)}{2}$`,R`$A=\dfrac{k(x_2^2-x_1^2)}{2}$`,R`$A=\dfrac{k(x_1^2-x_2^2)}{2}$`],a:4,
+ e:R`Консервативтік күш жұмысы потенциалдық энергияның кемуіне тең: $A=U_1-U_2=\dfrac{kx_1^2}{2}-\dfrac{kx_2^2}{2}=\dfrac{k(x_1^2-x_2^2)}{2}$. Серіппе көбірек созылса ($x_2>x_1$), жұмыс теріс.`,
+ s:{q:R`Қатаңдығы 200 Н/м серіппе 0,1 м-ге созылған. Оның потенциалдық энергиясы қандай?`,o:["20 Дж","1 Дж","2 Дж","10 Дж"],a:1,e:R`$U=\dfrac{kx^2}{2}=\dfrac{200\cdot0{,}01}{2}=1$ Дж.`}},
+{q:R`Күш 5 с ішінде 250 Дж жұмыс істеді. Осы аралықтағы орташа қуат қандай?`,o:["250 Вт","0,02 Вт","1250 Вт","5 Вт","50 Вт"],a:4,
+ e:R`$\langle N\rangle=\dfrac{A}{t}=\dfrac{250}{5}=50$ Вт.`,
+ s:{q:R`Қуаты 100 Вт қозғалтқыш 10 с ішінде қандай жұмыс атқарады?`,o:["10 Дж","1000 Дж","0,1 Дж","110 Дж"],a:1,e:R`$A=Nt=100\cdot10=1000$ Дж.`}},
+{q:R`Консервативтік күштің потенциалдық энергиямен векторлық байланысы қандай?`,o:[R`$\vec F=-\operatorname{grad}E_k$`,R`$\vec F=\operatorname{grad}U$`,R`$\vec F=\dfrac{dU}{dt}$`,R`$\vec F=U\vec r$`,R`$\vec F=-\operatorname{grad}U$`],a:4,
+ e:R`$\vec F=-\operatorname{grad}U=-\left(\dfrac{\partial U}{\partial x}\vec i+\dfrac{\partial U}{\partial y}\vec j+\dfrac{\partial U}{\partial z}\vec k\right)$. «Минус» күштің $U$ кемитін жаққа бағытталатынын көрсетеді.`,
+ s:{q:R`Бір өлшемді жағдайда консервативтік күштің $x$-проекциясы қалай анықталады?`,o:[R`$F_x=\dfrac{dU}{dx}$`,R`$F_x=-\dfrac{dU}{dx}$`,R`$F_x=\dfrac{U}{x}$`,R`$F_x=-\dfrac{dU}{dt}$`],a:1,e:R`$\operatorname{grad}U$-дың $x$-құраушысы: $F_x=-\dfrac{dU}{dx}$.`}},
+{q:R`$U(x)=3x^2$ (Дж), $x$ метрмен берілген. $x=2$ м нүктесіндегі $F_x$ қандай?`,o:["−6 Н","−3 Н","−12 Н","12 Н","6 Н"],a:2,
+ e:R`$F_x=-\dfrac{dU}{dx}=-6x$. $x=2$ м: $F_x=-12$ Н.`,
+ s:{q:R`$U(x)=2x^3$ (Дж). $x=1$ м нүктесіндегі $F_x$ қандай?`,o:["6 Н","−2 Н","−6 Н","−3 Н"],a:2,e:R`$F_x=-\dfrac{dU}{dx}=-6x^2=-6$ Н.`}},
+{q:R`Массасы 3 кг, радиусы 2 м жұқа сақинаның центрлік симметрия осіне қатысты инерция моменті қандай?`,o:["6 кг·м²","24 кг·м²","4 кг·м²","12 кг·м²","3 кг·м²"],a:3,
+ e:R`Сақинаның барлық массасы осьтен $R$ қашықтықта: $I=mR^2=3\cdot2^2=12$ кг·м².`,
+ s:{q:R`Массасы 2 кг, радиусы 3 м жұқа сақинаның центрлік осіне қатысты инерция моменті қандай?`,o:["6 кг·м²","9 кг·м²","18 кг·м²","12 кг·м²"],a:2,e:R`$I=mR^2=2\cdot9=18$ кг·м².`}},
+{q:R`Біртекті тұтас дискінің өз жазықтығына перпендикуляр центрлік оське қатысты инерция моменті қандай?`,o:[R`$I=\dfrac{mL^2}{12}$`,R`$I=mR^2$`,R`$I=\dfrac{mR^2}{2}$`,R`$I=\dfrac{mR^2}{4}$`,R`$I=\dfrac{2mR^2}{5}$`],a:2,
+ e:R`$I=\int r^2\,dm,\; dm=\dfrac{m}{\pi R^2}2\pi r\,dr \Rightarrow I=\dfrac{2m}{R^2}\int_0^R r^3dr=\dfrac{mR^2}{2}$. ($mR^2$ — сақина, $\frac{2}{5}mR^2$ — шар, $\frac{mL^2}{12}$ — стержень.)`,
+ s:{q:R`Біртекті тұтас шардың центрі арқылы өтетін оське қатысты инерция моменті қандай?`,o:[R`$\dfrac{mR^2}{2}$`,R`$\dfrac{2mR^2}{5}$`,R`$mR^2$`,R`$\dfrac{2mR^2}{3}$`],a:1,e:R`Тұтас шар: $I=\dfrac{2}{5}mR^2$ ($\dfrac{2}{3}mR^2$ — жұқа қабырғалы сфера).`}},
+{q:R`Параллель осьтер туралы Штейнер теоремасы қандай?`,o:[R`$I=\dfrac{md^2}{I_c}$`,R`$I=\dfrac{I_c}{m}$`,R`$I=I_c+md^2$`,R`$I=I_c+md$`,R`$I=I_c-md^2$`],a:2,
+ e:R`$I=I_c+md^2$: $I_c$ — массалар центрі арқылы өтетін параллель оське қатысты момент, $d$ — осьтер арақашықтығы. Сондықтан центрлік ось бойынша момент ең кіші.`,
+ s:{q:R`Ұзындығы $L$ біртекті стерженнің ұшы арқылы өтетін перпендикуляр оське қатысты инерция моменті қандай? ($I_c=\frac{mL^2}{12}$)`,o:[R`$\dfrac{mL^2}{12}$`,R`$\dfrac{mL^2}{4}$`,R`$\dfrac{mL^2}{3}$`,R`$\dfrac{mL^2}{2}$`],a:2,e:R`$d=\dfrac L2$: $I=\dfrac{mL^2}{12}+m\left(\dfrac L2\right)^2=\dfrac{mL^2}{3}$.`}},
+{q:R`Инерция моменті тұрақты дененің оське қатысты қозғалыс теңдеуі қандай?`,o:[R`$M_z=I_z\omega^2$`,R`$M_z=I_z\omega$`,R`$M_z=\dfrac{I_z}{\beta}$`,R`$M_z=\dfrac{\beta}{I_z}$`,R`$M_z=I_z\beta$`],a:4,
+ e:R`Айналмалы қозғалыс динамикасының негізгі теңдеуі: $M_z=I_z\beta$ — бұл $F=ma$-ның аналогы (күш → момент, масса → инерция моменті, үдеу → бұрыштық үдеу).`,
+ s:{q:R`Инерция моменті 2 кг·м² денеге 6 Н·м күш моменті әсер етеді. Бұрыштық үдеу қандай?`,o:["12 рад/с²","3 рад/с²","0,33 рад/с²","4 рад/с²"],a:1,e:R`$\beta=\dfrac{M}{I}=\dfrac62=3$ рад/с².`}},
+{q:R`Инерция моменті 4 кг·м² дене 3 рад/с жылдамдықпен айналады. Айналу кинетикалық энергиясы қандай?`,o:["12 Дж","36 Дж","6 Дж","18 Дж","72 Дж"],a:3,
+ e:R`$E_k=\dfrac{I\omega^2}{2}=\dfrac{4\cdot9}{2}=18$ Дж.`,
+ s:{q:R`Инерция моменті 2 кг·м² дене 5 рад/с бұрыштық жылдамдықпен айналады. Кинетикалық энергиясы қандай?`,o:["10 Дж","50 Дж","25 Дж","5 Дж"],a:2,e:R`$E_k=\dfrac{I\omega^2}{2}=\dfrac{2\cdot25}{2}=25$ Дж.`}},
+{q:R`Үдемелі санақ жүйесінде тыныш тұрған денеге енгізілетін ілгерілемелі инерция күші қандай?`,o:[R`$\vec F_{\text{ин}}=-m\vec a_0$`,R`$\vec F_{\text{ин}}=0$ әрқашан`,R`$\vec F_{\text{ин}}=m\vec a_0$`,R`$\vec F_{\text{ин}}=-m\vec v_0$`,R`$\vec F_{\text{ин}}=m\vec\omega$`],a:0,
+ e:R`Ілгерілемелі үдемелі ($\vec a_0$) жүйеде $\vec F_{\text{ин}}=-m\vec a_0$ — жүйе үдеуіне қарсы бағытталған. Мысалы, автобус кенет тежелгенде жолаушы алға ығысады.`,
+ s:{q:R`Массасы 50 кг адам 2 м/с² үдеумен жоғары көтерілетін лифтте тұр. Оның салмағы қандай? ($g=10$ м/с²)`,o:["400 Н","500 Н","600 Н","100 Н"],a:2,e:R`Инерция күші төмен бағытталған: $P=m(g+a)=50\cdot12=600$ Н.`}},
+{q:R`Нүктелік $M$ массадан $r$ қашықтықтағы гравитациялық потенциал қандай? Нөлдік деңгей шексіздікте.`,o:[R`$\varphi=-\dfrac{GM}{r^2}$`,R`$\varphi=-\dfrac{GMm}{r}$`,R`$\varphi=-\dfrac{GM}{r}$`,R`$\varphi=\dfrac{GM}{r}$`,R`$\varphi=-GMr$`],a:2,
+ e:R`Потенциал — бірлік массаның потенциалдық энергиясы: $\varphi=\dfrac{U}{m}=-\dfrac{GM}{r}$. Ал $-\dfrac{GMm}{r}$ — потенциалдық энергия, $\dfrac{GM}{r^2}$ — өріс кернеулігі.`,
+ s:{q:R`Нүктелік $M$ массадан $r$ қашықтықтағы гравитациялық өріс кернеулігінің модулі қандай?`,o:[R`$g=\dfrac{GM}{r}$`,R`$g=\dfrac{GM}{r^2}$`,R`$g=\dfrac{GMm}{r^2}$`,R`$g=-\dfrac{GM}{r}$`],a:1,e:R`$g=\dfrac Fm=\dfrac{GM}{r^2}$; бұл $\vec g=-\operatorname{grad}\varphi$ қатынасынан да шығады.`}},
+{q:R`Радиусы $r$ шеңберлік орбитадағы серіктің жылдамдығы қандай? Орталық дене массасы $M$.`,o:[R`$v=\dfrac{GM}{r}$`,R`$v=\sqrt{\dfrac{GM}{r}}$`,R`$v=\sqrt{\dfrac{2GM}{r}}$`,R`$v=\dfrac{GM}{r^2}$`,R`$v=\sqrt{GMr}$`],a:1,
+ e:R`Тартылыс күші центрге тартқыш күш рөлін атқарады: $\dfrac{GMm}{r^2}=\dfrac{mv^2}{r}\Rightarrow v=\sqrt{\dfrac{GM}{r}}$ (бірінші ғарыштық жылдамдық).`,
+ s:{q:R`$M$ массалы дененің тартылыс өрісінен $r$ қашықтықтан шексіздікке кету үшін қажетті ең кіші жылдамдық қандай?`,o:[R`$\sqrt{\dfrac{GM}{r}}$`,R`$\sqrt{\dfrac{2GM}{r}}$`,R`$\dfrac{2GM}{r}$`,R`$\sqrt{\dfrac{GM}{2r}}$`],a:1,e:R`$\dfrac{mv^2}{2}-\dfrac{GMm}{r}=0\Rightarrow v=\sqrt{\dfrac{2GM}{r}}=\sqrt2\,v_1$ (екінші ғарыштық жылдамдық).`}},
+{q:R`Тығыздығы 1000 кг/м³ сұйықтың 2 м тереңдіктегі артық қысымы қандай? $g=10$ м/с².`,o:["200 кПа","20 кПа","10 кПа","0,2 кПа","2 кПа"],a:1,
+ e:R`Гидростатикалық қысым: $p=\rho gh=1000\cdot10\cdot2=20\,000$ Па $=20$ кПа.`,
+ s:{q:R`Тығыздығы 800 кг/м³ керосиннің 5 м тереңдіктегі артық қысымы қандай? $g=10$ м/с².`,o:["4 кПа","40 кПа","400 кПа","16 кПа"],a:1,e:R`$p=\rho gh=800\cdot10\cdot5=40\,000$ Па $=40$ кПа.`}},
+{q:R`Сығылмайтын сұйықтың орныққан ағысы тар құбырда қалай өзгереді? Қима ауданы 3 есе кеміді.`,o:["Жылдамдық 3 есе кемиді","Тығыздық 3 есе артады","Жылдамдық 3 есе артады","Жылдамдық 9 есе артады","Жылдамдық өзгермейді"],a:2,
+ e:R`Үзіліссіздік теңдеуі: $S_1v_1=S_2v_2$. $S_2=\dfrac{S_1}{3}$ болса, $v_2=3v_1$. Сұйық сығылмайды, тығыздық өзгермейді.`,
+ s:{q:R`Құбырдың диаметрі 2 есе кеміді. Сығылмайтын сұйық ағысының жылдамдығы қалай өзгереді?`,o:["2 есе артады","4 есе артады","2 есе кемиді","Өзгермейді"],a:1,e:R`$S\sim d^2$, аудан 4 есе кемиді; $Sv=\text{const}$ бойынша жылдамдық 4 есе артады.`}},
+{q:R`Рейнольдс санының динамикалық тұтқырлық $\eta$ арқылы өрнегі қандай?`,o:[R`$Re=\dfrac{\eta}{\rho vl}$`,R`$Re=\dfrac{\rho vl}{\eta}$`,R`$Re=\dfrac{\eta vl}{\rho}$`,R`$Re=\dfrac{\rho v}{\eta l}$`,R`$Re=vl\eta$`],a:1,
+ e:R`$Re=\dfrac{\rho vl}{\eta}$ — инерция күштерінің тұтқырлық күштеріне қатынасы (өлшемсіз). Кинематикалық тұтқырлық $\nu=\dfrac\eta\rho$ арқылы: $Re=\dfrac{vl}{\nu}$.`,
+ s:{q:R`Рейнольдс саны кризистік мәннен кіші болса, ағыс сипаты қандай?`,o:["Турбулентті","Ламинарлы (қабатты)","Құйынды","Дыбыстан жылдам"],a:1,e:R`Аз $Re$-де тұтқырлық басым, ағыс ламинарлы; $Re$ кризистік мәннен (құбыр үшін $\approx2300$) асқанда турбуленттілік пайда болады.`}},
+{q:R`Гармоникалық тербелістің толық энергиясы қандай?`,o:[R`$E=\dfrac{m\omega_0A^2}{2}$`,R`$E=\dfrac{m\omega_0^2A^2}{2}$`,R`$E=\dfrac{m\omega_0^2}{A^2}$`,R`$E=-\dfrac{m\omega_0^2A^2}{2}$`,R`$E=\dfrac{m\omega_0^2A}{2}$`],a:1,
+ e:R`Тепе-теңдік күйінде барлық энергия кинетикалық, $v_{\max}=A\omega_0$: $E=\dfrac{mv_{\max}^2}{2}=\dfrac{m\omega_0^2A^2}{2}=\dfrac{kA^2}{2}$.`,
+ s:{q:R`$m=0{,}1$ кг, $\omega_0=10$ рад/с, $A=0{,}2$ м гармоникалық тербелістің толық энергиясы қандай?`,o:["0,1 Дж","0,2 Дж","2 Дж","0,02 Дж"],a:1,e:R`$E=\dfrac{m\omega_0^2A^2}{2}=\dfrac{0{,}1\cdot100\cdot0{,}04}{2}=0{,}2$ Дж.`}},
+{q:R`Қатаңдығы 100 Н/м серіппеге 1 кг жүк ілінген. Тербеліс периоды қандай?`,o:[R`$0{,}2\pi$ с`,R`$0{,}1\pi$ с`,R`$2\pi$ с`,R`$20\pi$ с`,R`$\pi$ с`],a:0,
+ e:R`Серіппелі маятник: $T=2\pi\sqrt{\dfrac mk}=2\pi\sqrt{\dfrac1{100}}=0{,}2\pi\approx0{,}63$ с.`,
+ s:{q:R`Ұзындығы 2,5 м математикалық маятниктің периоды қандай? $g=10$ м/с².`,o:[R`$0{,}5\pi$ с`,R`$\pi$ с`,R`$2\pi$ с`,R`$0{,}25\pi$ с`],a:1,e:R`$T=2\pi\sqrt{\dfrac lg}=2\pi\sqrt{0{,}25}=\pi$ с.`}},
+{q:R`Толқын жылдамдығы 240 м/с, жиілігі 80 Гц. Толқын ұзындығы қандай?`,o:["80 м","160 м","0,33 м","19 200 м","3 м"],a:4,
+ e:R`$\lambda=\dfrac{v}{\nu}=\dfrac{240}{80}=3$ м.`,
+ s:{q:R`Дыбыстың ауадағы жылдамдығы 340 м/с, толқын ұзындығы 2 м. Жиілігі қандай?`,o:["680 Гц","170 Гц","342 Гц","0,0059 Гц"],a:1,e:R`$\nu=\dfrac{v}{\lambda}=\dfrac{340}{2}=170$ Гц.`}}
+];
+
+const quiz=document.getElementById('quiz');
+let state=[];
+const opts=(o,id)=>o.map((t,i)=>`<button class="opt" data-q="${id}" data-i="${i}"><span class="l">${L[i]})</span><span>${t}</span></button>`).join('');
+function typeset(){
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([quiz]).catch(()=>{});}
+}
+document.getElementById('mj').addEventListener('load',()=>MathJax.startup.promise.then(typeset));
+function render(){
+  quiz.innerHTML=Q.map((x,n)=>`
+  <section class="q" id="q${n}">
+    <div class="qt"><b>${n+1}.</b> ${x.q}</div>
+    <div class="opts">${opts(x.o,'m'+n)}</div>
+    <div class="fb">
+      <div class="verdict"></div>
+      <div class="exp"><div class="label">Түсініктеме</div>${x.e}</div>
+      <div class="sim" id="s${n}">
+        <div class="label">Ұқсас сұрақ</div>
+        <div class="qt">${x.s.q}</div>
+        <div class="opts">${opts(x.s.o,'s'+n)}</div>
+        <div class="fb"><div class="verdict"></div><div>${x.s.e}</div></div>
+      </div>
+    </div>
+  </section>`).join('');
+  state=Q.map(()=>null);
+  document.getElementById('final').classList.remove('show');
+  update();typeset();
+}
+function mark(box,correct,chosen){
+  box.querySelectorAll(':scope > .opts .opt').forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('ok');else if(i===chosen)b.classList.add('bad');});
+  box.classList.add('done');
+  const v=box.querySelector(':scope > .fb .verdict');
+  if(chosen===null){v.className='verdict';v.textContent='Дұрыс жауап: '+L[correct];}
+  else if(chosen===correct){v.className='verdict ok';v.textContent='✓ Дұрыс! Жауап: '+L[correct];}
+  else{v.className='verdict bad';v.textContent='✗ Қате. Дұрыс жауап: '+L[correct];}
+}
+quiz.addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b||b.disabled)return;
+  const id=b.dataset.q,i=+b.dataset.i,n=+id.slice(1);
+  if(id[0]==='m'){state[n]=i;mark(document.getElementById('q'+n),Q[n].a,i);update();}
+  else mark(document.getElementById('s'+n),Q[n].s.a,i);
+});
+function update(){
+  const ans=state.filter(x=>x!==null).length, ok=state.filter((x,n)=>x===Q[n].a).length;
+  document.getElementById('score').textContent=`${ok} / ${Q.length} дұрыс · ${ans} жауап`;
+  document.getElementById('prog').style.width=(ans/Q.length*100)+'%';
+  if(ans===Q.length){
+    document.getElementById('final').classList.add('show');
+    document.getElementById('fscore').textContent=`${ok} / ${Q.length} (${Math.round(ok/Q.length*100)}%)`;
+    document.getElementById('fmsg').textContent=ok>=27?'Керемет нәтиже!':ok>=21?'Жақсы! Қателерді түсініктемелермен қайталаңыз.':'Түсініктемелер мен ұқсас сұрақтарды қайта қарап шығыңыз.';
+  }
+}
+document.getElementById('reveal').onclick=()=>Q.forEach((x,n)=>{if(state[n]===null)mark(document.getElementById('q'+n),x.a,null);});
+document.getElementById('reset').onclick=()=>{render();window.scrollTo(0,0);};
+render();
+</script>
+</body>
+</html>
