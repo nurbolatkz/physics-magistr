@@ -53,3 +53,31 @@ const RAW = [
 ['Pronouns','The scientist ___ discovered it won a prize.',['which','whose','who','where'],2,'Who refers to people in a relative clause.']
 ];
 const QUESTIONS=RAW.map(([topic,question,options,answer,rule])=>({topic,question,options,answer,rule}));
+const RULE_CARDS = [
+  {title:'1. Tense clues',hint:'Every day / now / yesterday / since or for',ru:'Слова-подсказки помогают выбрать время. Every day — действие повторяется: I study. Now — происходит прямо сейчас: I am studying. Yesterday — уже закончилось: I studied. Since или for часто ведут к have/has + третья форма.',error:'Ошибка: “She go every day”. Правильно: “She goes every day” — после she в Present Simple добавляем -s.',questions:[10,11,12]},
+  {title:'2. Finished vs connected past',hint:'Past Simple or Present Perfect?',ru:'Если названо точное прошлое время (yesterday, last night), выбирай Past Simple: I saw. Если важен опыт или результат сейчас и точного времени нет, выбирай Present Perfect: I have seen. После have нужна третья форма глагола.',error:'Ошибка: “I have seen her yesterday”. Правильно: “I saw her yesterday” — yesterday закрывает событие в прошлом.',questions:[15,18,19]},
+  {title:'3. Articles',hint:'a, an, the, or no article',ru:'A или an значит «какой-то один»: a book, an apple. Смотри на звук, а не только на букву: a university. The значит «тот самый», уже понятный собеседнику. Когда говорим о воде вообще, артикль не нужен.',error:'Ошибка: “an university”. Правильно: “a university”, потому что в начале слышим звук «й».',questions:[0,2,3]},
+  {title:'4. Countable and uncountable nouns',hint:'many / few or much / little',ru:'Если предметы можно посчитать по одному (students), говорим many или few. Если это вещество или понятие (water, time, information), говорим much или little. Information не становится informations.',error:'Ошибка: “many information”. Правильно: “much information” или “some information”.',questions:[5,6,9]},
+  {title:'5. Modals and passive',hint:'must + verb; be + past participle',ru:'После can, must, should ставь глагол без to: can solve. Если действие делают над предметом, нужна пассивная форма: The report was written. С модальным глаголом: must be written.',error:'Ошибка: “She can solves”. Правильно: “She can solve” — после can нет -s.',questions:[25,27,29]},
+  {title:'6. Conditionals',hint:'If + present / past / past perfect',ru:'Реальный план: If it rains, we will stay. Воображаемая ситуация сейчас: If I had time, I would study. Воображаемое прошлое: If I had studied, I would have passed. Сначала спроси себя: это реально, фантазия сейчас или уже упущенный шанс?',error:'Ошибка: “If it will rain, we will stay”. Правильно: “If it rains, we will stay” — после if в первом условном нет will.',questions:[30,31,32]},
+  {title:'7. Gerunds and infinitives',hint:'enjoy doing; decide to do',ru:'Некоторые глаголы требуют -ing: enjoy studying. Другие требуют to + глагол: decide to study. После предлога тоже ставь -ing: interested in studying. Запомни эти три маленьких шаблона.',error:'Ошибка: “interested in to study”. Правильно: “interested in studying” — после in нужна форма -ing.',questions:[35,36,37]},
+  {title:'8. Prepositions',hint:'in / on / at; since / for',ru:'Представь календарь: in — большой период (год, месяц), on — конкретный день, at — точное время на часах. Since показывает точку начала (since 2020), for показывает длину времени (for two years).',error:'Ошибка: “at Monday”. Правильно: “on Monday” — с днями недели используем on.',questions:[40,41,42]},
+  {title:'9. Comparisons and adverbs',hint:'more ... than; the most; -ly',ru:'Сравниваем две вещи: bigger than или more difficult than. Выбираем самый-самый из группы: the biggest или the most difficult. Прилагательное описывает вещь (clear rule), наречие — действие (explain clearly).',error:'Ошибка: “She explained clear”. Правильно: “She explained clearly” — как объяснила?',questions:[45,46,47]},
+  {title:'10. Pronouns and relatives',hint:'who / which / whose; myself',ru:'Who относится к человеку: the scientist who discovered it. Which — к вещи: the book which I read. Whose значит «чей»: the girl whose bag is red. Myself значит «сам/сама себя».',error:'Ошибка: “the man which helped me”. Правильно: “the man who helped me” — man это человек.',questions:[49],extra:[
+    {question:'The book ___ I bought is new.',options:['who','which','whose','myself'],answer:1,rule:'Книга — вещь, поэтому which.'},
+    {question:'The student ___ notebook is missing is here.',options:['who','which','whose','himself'],answer:2,rule:'Чья тетрадь? Для принадлежности используем whose.'}
+  ]}
+];
+const TOPIC_HINT_RU = {
+  'Articles':'A/an — «какой-то один», the — «тот самый». Для общего смысла артикль часто не нужен.',
+  'Nouns':'Можно посчитать — many/few. Нельзя посчитать — much/little.',
+  'Present tenses':'Смотри на подсказку: every day — привычка, now — прямо сейчас, since/for — связь с настоящим.',
+  'Past and perfect':'Yesterday или last night — простое прошедшее. Have/has + третья форма — опыт или результат сейчас.',
+  'Future':'Will — прогноз; going to — когда уже видны признаки; by Friday — результат будет готов к сроку.',
+  'Passive and modals':'После can/must ставь простую форму глагола. В пассиве нужна связка be + третья форма.',
+  'Conditionals':'После if для реального будущего ставь настоящее время; would — для воображаемой ситуации.',
+  'Gerund and infinitive':'После enjoy и предлога ставь -ing. После decide ставь to + глагол.',
+  'Prepositions':'In — большой период, on — день, at — точное время. Since — начало, for — длительность.',
+  'Adjectives and adverbs':'Прилагательное описывает предмет, наречие — действие. Для сравнения часто нужны than или the.',
+  'Pronouns':'Who — человек, which — вещь, whose — «чей».'
+};
