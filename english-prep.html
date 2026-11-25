@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English · 35+ point preparation</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17233a;background:#f2f5fa;line-height:1.55}
+*{box-sizing:border-box}body{margin:0}main{max-width:850px;margin:auto;padding:24px 16px 70px}a{color:#234f9e}
+h1{font-size:clamp(1.6rem,5vw,2.3rem);margin:9px 0 3px}h2{font-size:1.15rem;margin:0 0 12px}.sub{color:#536078;margin:0 0 18px}
+.panel{background:#fff;border:1px solid #d9e1eb;border-radius:13px;padding:20px;margin:15px 0}
+.intro{border-left:4px solid #234f9e}.intro p{margin:4px 0}.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
+.rule{background:#f3f6fc;border-radius:9px;padding:10px 12px;font-size:.94rem}.rule b{display:block;color:#234f9e}
+.meta{display:flex;justify-content:space-between;gap:10px;color:#536078;font-size:.9rem}.question{font-size:1.18rem;font-weight:700;margin:15px 0}
+fieldset{border:0;margin:0;padding:0}legend{font-weight:650;margin-bottom:8px}.option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:7px 0;border:1px solid #d9e1eb;border-radius:9px;cursor:pointer}
+.option:has(input:checked){border-color:#234f9e;background:#eef3ff}.option.correct{background:#e6f4ec;border-color:#71af8b}.option.wrong{background:#fff0ed;border-color:#db9386}
+input{margin-top:.36em;accent-color:#234f9e}button{font:inherit;border-radius:8px;padding:9px 15px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#17233a}
+button.primary{background:#234f9e;color:#fff;border-color:#234f9e}button:disabled{opacity:.5;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #78a4ff;outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.feedback{display:none;margin-top:15px;background:#f2f5fa;border-radius:9px;padding:12px}.feedback.show{display:block}.feedback b{display:block}
+progress{width:100%;accent-color:#234f9e}.score{font-weight:700;color:#234f9e}.hidden{display:none!important}
+@media(max-width:520px){.panel{padding:15px}.meta{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<main>
+<a href="./">← Physics home</a>
+<h1>English: aim for 35+</h1>
+<p class="sub">A compact lesson and 50 question quiz based on the grammar topics in <em>english_format.doc</em>.</p>
+<section class="panel intro"><h2>How to study</h2><p>Memorize the rules below, then answer one question at a time. After you press <b>Check</b>, read the explanation—even when you are correct.</p><p>Target: <b>35 correct out of 50</b>. This practice score is a study target, not an official exam prediction.</p></section>
+<section class="panel"><h2>Rules worth remembering first</h2><div class="rules">
+<div class="rule"><b>1. Tense clues</b>Every day → present simple; now → present continuous; yesterday → past simple; since/for → present perfect.</div>
+<div class="rule"><b>2. Finished vs connected past</b>Use past simple with a finished time. Use present perfect for experience or a result relevant now.</div>
+<div class="rule"><b>3. Articles</b><em>a/an</em> = one nonspecific singular countable thing; <em>the</em> = specific/known; no article for general plural or uncountable nouns.</div>
+<div class="rule"><b>4. Countability</b><em>many/few</em> + countable plural; <em>much/little</em> + uncountable; <em>some/any</em> work with both.</div>
+<div class="rule"><b>5. Modals and passive</b>Modal + base verb; modal passive = modal + be + past participle. Ordinary passive = be + past participle.</div>
+<div class="rule"><b>6. Conditionals</b>If + present, will + verb (real future). If + past, would + verb (imagined present). If + past perfect, would have + participle (imagined past).</div>
+<div class="rule"><b>7. Gerunds and infinitives</b>After a preposition use <em>-ing</em>. <em>enjoy/avoid</em> + -ing; <em>want/decide</em> + to + verb.</div>
+<div class="rule"><b>8. Prepositions</b><em>in</em> months/years, <em>on</em> days/dates, <em>at</em> times; <em>since</em> = starting point, <em>for</em> = duration.</div>
+<div class="rule"><b>9. Comparisons and adverbs</b>Comparative + than; superlative + the. Adjectives describe nouns; adverbs describe actions.</div>
+<div class="rule"><b>10. Pronouns and relatives</b><em>who</em> for people, <em>which</em> for things, <em>whose</em> for possession. Reflexive pronouns end in <em>-self/-selves</em>.</div>
+</div></section>
+<section class="panel" id="quiz"><div class="meta"><span id="position"></span><span class="score" id="score"></span></div><progress id="progress" max="50" value="0"></progress><div id="question" class="question"></div><fieldset id="options"><legend>Choose one answer</legend></fieldset><div class="actions"><button id="check" class="primary">Check</button><button id="next" class="hidden">Next question →</button><button id="restart">Start again</button></div><div id="feedback" class="feedback" role="status"></div></section>
+<section class="panel hidden" id="result"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="again" class="primary">Try again</button></section>
+</main>
+<script src="english-prep.js"></script>
+<script>
+const $=id=>document.getElementById(id);let index=0,score=0,checked=false;
+function render(){const item=QUESTIONS[index];checked=false;$('quiz').classList.remove('hidden');$('result').classList.add('hidden');$('position').textContent=`Question ${index+1} of ${QUESTIONS.length} · ${item.topic}`;$('score').textContent=`${score} / ${index} correct · target 35`;$('progress').value=index;$('question').textContent=item.question;$('feedback').classList.remove('show');$('check').classList.remove('hidden');$('next').classList.add('hidden');const field=$('options');field.querySelectorAll('label').forEach(x=>x.remove());item.options.forEach((value,i)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='answer';input.value=i;label.append(input,document.createTextNode(value));field.append(label)});}
+$('check').onclick=()=>{if(checked)return;const selected=document.querySelector('input[name="answer"]:checked');if(!selected){$('feedback').textContent='Choose an answer first.';$('feedback').classList.add('show');return}checked=true;const item=QUESTIONS[index],choice=Number(selected.value),right=choice===item.answer;if(right)score++;document.querySelectorAll('.option').forEach((label,i)=>{label.querySelector('input').disabled=true;if(i===item.answer)label.classList.add('correct');else if(i===choice)label.classList.add('wrong')});$('feedback').replaceChildren();const heading=document.createElement('b');heading.textContent=right?'Correct!':'Review this rule:';const explanation=document.createElement('span');explanation.textContent=item.rule;$('feedback').append(heading,explanation);$('feedback').classList.add('show');$('score').textContent=`${score} / ${index+1} correct · target 35`;$('check').classList.add('hidden');$('next').classList.remove('hidden');$('next').textContent=index===QUESTIONS.length-1?'See result →':'Next question →';};
+$('next').onclick=()=>{if(!checked)return;if(++index<QUESTIONS.length){render();return}$('quiz').classList.add('hidden');$('result').classList.remove('hidden');$('resultTitle').textContent=`Your score: ${score} / ${QUESTIONS.length}`;$('resultText').textContent=score>=35?'You reached the 35 point practice target. Review any rules you missed, then try again for a stronger margin.':'Review the rule cards, especially the topics you missed, and repeat the quiz to reach 35.';$('progress').value=QUESTIONS.length;scrollTo({top:$('result').offsetTop-20,behavior:'smooth'});};
+function restart(){index=0;score=0;render();scrollTo({top:0,behavior:'smooth'})}$('restart').onclick=restart;$('again').onclick=restart;render();
+</script>
+</body>
+</html>
