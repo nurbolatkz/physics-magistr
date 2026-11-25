@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>English · 35+ point preparation</title>
+<title>English · 40+ point preparation</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17233a;background:#f2f5fa;line-height:1.55}
 *{box-sizing:border-box}body{margin:0}main{max-width:850px;margin:auto;padding:24px 16px 70px}a{color:#234f9e}
@@ -16,7 +16,7 @@ h1{font-size:clamp(1.6rem,5vw,2.3rem);margin:9px 0 3px}h2{font-size:1.15rem;marg
 .rule[open] summary{border-bottom:1px solid #d9e1eb}.rule-body{padding:12px 14px}.rule-body p{margin:0 0 10px}.common-error{background:#fff4dc;padding:9px 11px;border-radius:7px}
 .mini-title{font-weight:700;margin:16px 0 8px}.mini-question{background:#fff;border:1px solid #d9e1eb;border-radius:9px;padding:11px;margin:8px 0}.mini-question p{font-weight:600;margin:0 0 7px}
 .mini-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}.mini-option{border:1px solid #d9e1eb;border-radius:7px;padding:7px 9px;cursor:pointer}.mini-option:has(input:checked){border-color:#234f9e;background:#eef3ff}
-.mini-option.correct{background:#e6f4ec;border-color:#71af8b}.mini-option.wrong{background:#fff0ed;border-color:#db9386}.mini-feedback{margin-top:7px;color:#39465d}
+.exceptions{background:#eef3ff;border-radius:8px;padding:10px 12px 10px 30px;margin:0 0 10px}.exceptions li{margin:4px 0}.exceptions i{color:#536078}.modes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.modes button.active{background:#234f9e;color:#fff;border-color:#234f9e}background:#e6f4ec;border-color:#71af8b}.mini-option.wrong{background:#fff0ed;border-color:#db9386}.mini-feedback{margin-top:7px;color:#39465d}
 .meta{display:flex;justify-content:space-between;gap:10px;color:#536078;font-size:.9rem}.question{font-size:1.18rem;font-weight:700;margin:15px 0}
 fieldset{border:0;margin:0;padding:0}legend{font-weight:650;margin-bottom:8px}.option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:7px 0;border:1px solid #d9e1eb;border-radius:9px;cursor:pointer}
 .option:has(input:checked){border-color:#234f9e;background:#eef3ff}.option.correct{background:#e6f4ec;border-color:#71af8b}.option.wrong{background:#fff0ed;border-color:#db9386}
@@ -30,25 +30,30 @@ progress{width:100%;accent-color:#234f9e}.score{font-weight:700;color:#234f9e}.h
 <body>
 <main>
 <a href="./">← Physics home</a>
-<h1>English: aim for 35+</h1>
+<h1>English: aim for 40+</h1>
 <p class="sub">A compact lesson and 50 question quiz based on the grammar topics in <em>english_format.doc</em>.</p>
-<section class="panel intro"><h2>How to study</h2><p>Memorize the rules below, then answer one question at a time. After you press <b>Check</b>, read the explanation—even when you are correct.</p><p>Target: <b>35 correct out of 50</b>. This practice score is a study target, not an official exam prediction.</p></section>
-<section class="panel"><div class="rules-head"><h2>Rules worth remembering first</h2><button id="toggleRules" type="button">Show all</button></div><p class="sub">Click a rule to see a simple explanation in Russian, a common mistake, and three practice questions.</p><div class="rules" id="ruleCards"></div></section>
-<section class="panel" id="quiz"><div class="meta"><span id="position"></span><span class="score" id="score"></span></div><progress id="progress" max="50" value="0"></progress><div id="question" class="question"></div><fieldset id="options"><legend>Choose one answer</legend></fieldset><div class="actions"><button id="check" class="primary">Check</button><button id="next" class="hidden">Next question →</button><button id="restart">Start again</button></div><div id="feedback" class="feedback" role="status"></div></section>
+<section class="panel intro"><h2>How to study</h2><p>Memorize the rules below, then answer one question at a time. After you press <b>Check</b>, read the explanation—even when you are correct.</p><p>Target: <b>40 correct out of 50</b> (80%). The exceptions are where most points are lost, so open every card, read the <b>Исключения</b> list and do all its questions. Then run the <b>Exceptions drill</b> until you score 80%+. This practice score is a study target, not an official exam prediction.</p></section>
+<section class="panel"><div class="rules-head"><h2>Rules worth remembering first</h2><button id="toggleRules" type="button">Show all</button></div><p class="sub">Click a rule to see a simple explanation in Russian, a common mistake, and a list of exceptions, and 12–18 practice questions.</p><div class="rules" id="ruleCards"></div></section>
+<section class="panel" id="quiz"><div class="modes"><button type="button" id="modeMain" class="active">Main quiz (50)</button><button type="button" id="modeDrill">Exceptions drill</button></div><div class="meta"><span id="position"></span><span class="score" id="score"></span></div><progress id="progress" max="50" value="0"></progress><div id="question" class="question"></div><fieldset id="options"><legend>Choose one answer</legend></fieldset><div class="actions"><button id="check" class="primary">Check</button><button id="next" class="hidden">Next question →</button><button id="restart">Start again</button></div><div id="feedback" class="feedback" role="status"></div></section>
 <section class="panel hidden" id="result"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="again" class="primary">Try again</button></section>
 </main>
 <script src="english-prep.js"></script>
+<script src="english-exceptions.js"></script>
 <script>
 const $=id=>document.getElementById(id);let index=0,score=0,checked=false;
 function textNode(tag,value,className){const element=document.createElement(tag);if(className)element.className=className;element.textContent=value;return element}
+function drillItem([question,options,answer,rule]){return{question,options,answer,rule}}
 function renderRuleCards(){
   const container=$('ruleCards');
   RULE_CARDS.forEach((rule,ruleIndex)=>{
     const card=document.createElement('details');card.className='rule';
     const summary=document.createElement('summary');summary.append(document.createTextNode(rule.title),textNode('span',rule.hint));card.append(summary);
     const body=document.createElement('div');body.className='rule-body';
-    body.append(textNode('p',rule.ru),textNode('p',rule.error,'common-error'),textNode('div','Попробуй сам: 3 вопроса','mini-title'));
-    const questions=rule.questions.map(i=>QUESTIONS[i]).concat(rule.extra||[]);
+    const ex=EXCEPTIONS[ruleIndex];
+    body.append(textNode('p',rule.ru),textNode('p',rule.error,'common-error'),textNode('div','Исключения — запомни','mini-title'));
+    const list=document.createElement('ul');list.className='exceptions';ex.notes.forEach(([ru,en])=>{const li=document.createElement('li');li.append(document.createTextNode(ru+' '),textNode('i',en));list.append(li)});body.append(list);
+    const questions=rule.questions.map(i=>QUESTIONS[i]).concat(rule.extra||[],ex.drill.map(drillItem));
+    body.append(textNode('div',`Попробуй сам: ${questions.length} вопросов`,'mini-title'));
     questions.forEach((item,questionIndex)=>{
       const mini=document.createElement('div');mini.className='mini-question';mini.append(textNode('p',`${questionIndex+1}. ${item.question}`));
       const options=document.createElement('div');options.className='mini-options';const inputs=[];
@@ -65,7 +70,7 @@ function renderRuleCards(){
         const right=selected===item.answer;
         options.querySelectorAll('.mini-option').forEach((label,i)=>{if(i===item.answer)label.classList.add('correct');else if(i===selected)label.classList.add('wrong')});
         inputs.forEach(input=>input.disabled=true);check.disabled=true;
-        const explanation=(rule.extra||[]).includes(item)?item.rule:rule.ru.split('.')[0]+'.';
+        const explanation=item.rule;
         feedback.textContent=(right?'Верно! ':'Пока нет. ')+`Правильный ответ: ${item.options[item.answer]}. `+explanation;
       };
       mini.append(options,check,feedback);body.append(mini);
@@ -76,10 +81,16 @@ function renderRuleCards(){
 renderRuleCards();
 $('toggleRules').onclick=()=>{const cards=[...document.querySelectorAll('#ruleCards details')];const open=cards.some(card=>!card.open);cards.forEach(card=>card.open=open);$('toggleRules').textContent=open?'Hide all':'Show all'};
 document.querySelectorAll('#ruleCards details').forEach(card=>card.addEventListener('toggle',()=>{$('toggleRules').textContent=[...document.querySelectorAll('#ruleCards details')].every(item=>item.open)?'Hide all':'Show all'}));
-function render(){const item=QUESTIONS[index];checked=false;$('quiz').classList.remove('hidden');$('result').classList.add('hidden');$('position').textContent=`Question ${index+1} of ${QUESTIONS.length} · ${item.topic}`;$('score').textContent=`${score} / ${index} correct · target 35`;$('progress').value=index;$('question').textContent=item.question;$('feedback').classList.remove('show');$('check').classList.remove('hidden');$('next').classList.add('hidden');const field=$('options');field.querySelectorAll('label').forEach(x=>x.remove());item.options.forEach((value,i)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='answer';input.value=i;label.append(input,document.createTextNode(value));field.append(label)});}
-$('check').onclick=()=>{if(checked)return;const selected=document.querySelector('input[name="answer"]:checked');if(!selected){$('feedback').textContent='Choose an answer first.';$('feedback').classList.add('show');return}checked=true;const item=QUESTIONS[index],choice=Number(selected.value),right=choice===item.answer;if(right)score++;document.querySelectorAll('.option').forEach((label,i)=>{label.querySelector('input').disabled=true;if(i===item.answer)label.classList.add('correct');else if(i===choice)label.classList.add('wrong')});$('feedback').replaceChildren();const heading=document.createElement('b');heading.textContent=right?'Correct!':'Review this rule:';const explanation=document.createElement('span');explanation.textContent=item.rule+' '+TOPIC_HINT_RU[item.topic];$('feedback').append(heading,explanation);$('feedback').classList.add('show');$('score').textContent=`${score} / ${index+1} correct · target 35`;$('check').classList.add('hidden');$('next').classList.remove('hidden');$('next').textContent=index===QUESTIONS.length-1?'See result →':'Next question →';};
-$('next').onclick=()=>{if(!checked)return;if(++index<QUESTIONS.length){render();return}$('quiz').classList.add('hidden');$('result').classList.remove('hidden');$('resultTitle').textContent=`Your score: ${score} / ${QUESTIONS.length}`;$('resultText').textContent=score>=35?'You reached the 35 point practice target. Review any rules you missed, then try again for a stronger margin.':'Review the rule cards, especially the topics you missed, and repeat the quiz to reach 35.';$('progress').value=QUESTIONS.length;scrollTo({top:$('result').offsetTop-20,behavior:'smooth'});};
-function restart(){index=0;score=0;render();scrollTo({top:0,behavior:'smooth'})}$('restart').onclick=restart;$('again').onclick=restart;render();
+const DRILL=RULE_CARDS.flatMap((rule,i)=>EXCEPTIONS[i].drill.map(([question,options,answer,expl])=>({topic:rule.title.replace(/^\d+\.\s*/,''),question,options,answer,rule:expl})));
+let QUIZ=QUESTIONS,mode='main';
+const target=()=>mode==='main'?40:Math.ceil(QUIZ.length*0.8);
+function shuffle(list){const copy=[...list];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
+function render(){const item=QUIZ[index];checked=false;$('quiz').classList.remove('hidden');$('result').classList.add('hidden');$('position').textContent=`Question ${index+1} of ${QUIZ.length} · ${item.topic}`;$('score').textContent=`${score} / ${index} correct · target ${target()}`;$('progress').max=QUIZ.length;$('progress').value=index;$('question').textContent=item.question;$('feedback').classList.remove('show');$('check').classList.remove('hidden');$('next').classList.add('hidden');const field=$('options');field.querySelectorAll('label').forEach(x=>x.remove());item.options.forEach((value,i)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='answer';input.value=i;label.append(input,document.createTextNode(value));field.append(label)});}
+$('check').onclick=()=>{if(checked)return;const selected=document.querySelector('input[name="answer"]:checked');if(!selected){$('feedback').textContent='Choose an answer first.';$('feedback').classList.add('show');return}checked=true;const item=QUIZ[index],choice=Number(selected.value),right=choice===item.answer;if(right)score++;document.querySelectorAll('.option').forEach((label,i)=>{label.querySelector('input').disabled=true;if(i===item.answer)label.classList.add('correct');else if(i===choice)label.classList.add('wrong')});$('feedback').replaceChildren();const heading=document.createElement('b');heading.textContent=right?'Correct!':'Review this rule:';const explanation=document.createElement('span');explanation.textContent=item.rule+' '+(TOPIC_HINT_RU[item.topic]||'');$('feedback').append(heading,explanation);$('feedback').classList.add('show');$('score').textContent=`${score} / ${index+1} correct · target ${target()}`;$('check').classList.add('hidden');$('next').classList.remove('hidden');$('next').textContent=index===QUIZ.length-1?'See result →':'Next question →';};
+$('next').onclick=()=>{if(!checked)return;if(++index<QUIZ.length){render();return}$('quiz').classList.add('hidden');$('result').classList.remove('hidden');$('resultTitle').textContent=`Your score: ${score} / ${QUIZ.length}`;$('resultText').textContent=score>=target()?`You reached the ${target()} point target. Review the questions you missed and repeat for a safer margin.`:`Target is ${target()}. Open the rule cards for the topics you missed, redo their exception questions, and try again.`;$('progress').value=QUIZ.length;scrollTo({top:$('result').offsetTop-20,behavior:'smooth'});};
+function setMode(next){mode=next;QUIZ=mode==='main'?QUESTIONS:shuffle(DRILL);$('modeMain').classList.toggle('active',mode==='main');$('modeDrill').classList.toggle('active',mode==='drill');$('modeDrill').textContent=`Exceptions drill (${DRILL.length})`;index=0;score=0;render()}
+$('modeMain').onclick=()=>setMode('main');$('modeDrill').onclick=()=>setMode('drill');
+function restart(){setMode(mode);scrollTo({top:0,behavior:'smooth'})}$('restart').onclick=restart;$('again').onclick=restart;setMode('main');
 </script>
 </body>
 </html>
